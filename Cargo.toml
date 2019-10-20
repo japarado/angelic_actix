@@ -1,0 +1,15 @@
+[package]
+name = "angelic_actix"
+version = "0.1.0"
+authors = ["Justin Parado <justin.parado@dice205.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "1.0"
+actix = "0.8.3"
+diesel = { version = "1.4.3", features = [ "mysql", "postgres"] }
+dotenv = "0.14.1"
+serde = "1.0.101"
+colored = "1.8.0"
