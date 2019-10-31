@@ -1,6 +1,6 @@
 -- Your SQL goes here
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
+    title VARCHAR NOT NULL,
     body TEXT NOT NULL
 )
