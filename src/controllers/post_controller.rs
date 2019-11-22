@@ -59,13 +59,16 @@ pub fn update(path: web::Path<(i32)>, form: web::Form<NewPost>) -> impl Responde
     let result = posts.filter(id.eq(post_id)).first::<Post>(&connection);
 
     match result {
-        Ok(post) =>
-        {
-            HttpResponse::Ok().json(post)
+        Ok(post) => {
+            let post_title = form.title.to_string();
+            let post_body = form.body.to_string();
+            let updated_post = diesel::update(&post)
+                .set((title.eq(post_title), body.eq(post_body)))
+                .get_result::<Post>(&connection)
+                .unwrap();
+            HttpResponse::Ok().json(updated_post)
         }
-        Err(e) => {
-            HttpResponse::Ok().body(format!("Post with ID of {} not found", post_id))
-        }
+        Err(e) => HttpResponse::Ok().body(format!("Post with ID of {} not found", post_id)),
     }
 }
 
