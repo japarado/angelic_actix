@@ -12,7 +12,8 @@ mod models;
 mod routes;
 mod schema;
 
-use actix_web::{get, middleware, App, HttpResponse, HttpServer, Responder};
+use actix_cors::Cors;
+use actix_web::{get, http, middleware, App, HttpResponse, HttpServer, Responder};
 use dotenv::dotenv;
 use std::env;
 
@@ -28,6 +29,14 @@ fn main() {
 
     HttpServer::new(move || {
         App::new()
+            .wrap(
+                Cors::new()
+                    // .allowed_origin("http://localhost:3001")
+                    .allowed_methods(vec!["GET", "PUT", "POST", "PATCH", "DELETE"])
+                    .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+                    .allowed_header(http::header::CONTENT_TYPE)
+                    .max_age(3600),
+            )
             .wrap(middleware::Logger::default())
             .configure(routes::posts::config)
             .service(index)

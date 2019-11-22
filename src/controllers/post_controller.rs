@@ -57,6 +57,16 @@ pub fn update(path: web::Path<(i32)>, form: web::Form<NewPost>) -> impl Responde
     use crate::schema::posts::dsl::*;
     let connection = database::establish_connection();
     let result = posts.filter(id.eq(post_id)).first::<Post>(&connection);
+
+    match result {
+        Ok(post) =>
+        {
+            HttpResponse::Ok().json(post)
+        }
+        Err(e) => {
+            HttpResponse::Ok().body(format!("Post with ID of {} not found", post_id))
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize)]

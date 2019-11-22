@@ -7,5 +7,6 @@ pub fn config(cfg: &mut web::ServiceConfig) {
             .service(post_controller::index)
             .service(post_controller::get)
             .service(post_controller::store)
+            .service(post_controller::update),
     );
 }
