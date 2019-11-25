@@ -39,6 +39,7 @@ fn main() {
             )
             .wrap(middleware::Logger::default())
             .configure(routes::posts::config)
+            .configure(routes::users::config)
             .service(index)
     })
     .bind(address)

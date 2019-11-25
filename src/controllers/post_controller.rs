@@ -1,6 +1,6 @@
 use crate::database;
 use crate::models::{NewPost, Post};
-use actix_web::{get, patch, post, web, HttpResponse, Responder};
+use actix_web::{delete, get, patch, post, web, HttpResponse, Responder};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -9,7 +9,7 @@ fn index() -> impl Responder {
     use crate::schema::posts::dsl::*;
     let connection = database::establish_connection();
 
-    let results = posts.load::<Post>(&connection);
+    let results = posts.order(id.asc()).load::<Post>(&connection);
 
     match results {
         Ok(retrieved_posts) => HttpResponse::Ok().json(retrieved_posts),
@@ -36,6 +36,7 @@ pub fn store(form: web::Form<NewPost>) -> impl Responder {
     let new_post = NewPost {
         title: form.title.to_string(),
         body: form.body.to_string(),
+        user_id: 1,
     };
 
     use crate::schema::posts::dsl::*;
@@ -68,7 +69,22 @@ pub fn update(path: web::Path<(i32)>, form: web::Form<NewPost>) -> impl Responde
                 .unwrap();
             HttpResponse::Ok().json(updated_post)
         }
-        Err(e) => HttpResponse::Ok().body(format!("Post with ID of {} not found", post_id)),
+        Err(_e) => HttpResponse::Ok().body(format!("Post with ID of {} not found", post_id)),
+    }
+}
+
+#[delete("/{id}")]
+pub fn delete(path: web::Path<(i32)>) -> impl Responder {
+    let post_id: i32 = path.to_string().parse::<i32>().unwrap();
+
+    use crate::schema::posts::dsl::*;
+    let connection = database::establish_connection();
+
+    let deleted = diesel::delete(posts.find(post_id)).load::<Post>(&connection);
+
+    match deleted {
+        Ok(post) => HttpResponse::Ok().json(post),
+        Err(e) => HttpResponse::Ok().body(format!("{}", e)),
     }
 }
 
