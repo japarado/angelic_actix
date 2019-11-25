@@ -67,3 +67,13 @@ pub fn store(form: web::Form<NewUser>) -> impl Responder {
 
     HttpResponse::Ok().json(user)
 }
+
+#[patch("/{id}")]
+pub fn update(path: web::Path<(i32)>, form: web::Form<NewUser>) -> impl Responder {
+    HttpResponse::Ok().json("User update root")
+}
+
+#[delete("/{id}")]
+pub fn delete(path: web::Path<(i32)>) -> impl Responder {
+    HttpResponse::Ok().json("User delete root")
+}
