@@ -23,7 +23,7 @@ pub fn get(path: web::Path<(i32)>) -> impl Responder {
 
     use crate::schema::posts::dsl::*;
     let connection = database::establish_connection();
-    let result = posts.filter(id.eq(post_id)).first::<Post>(&connection);
+    let result = posts.find(post_id).first::<Post>(&connection);
 
     match result {
         Ok(post) => HttpResponse::Ok().json(post),
@@ -36,7 +36,7 @@ pub fn store(form: web::Form<NewPost>) -> impl Responder {
     let new_post = NewPost {
         title: form.title.to_string(),
         body: form.body.to_string(),
-        user_id: 1,
+        user_id: form.user_id,
     };
 
     use crate::schema::posts::dsl::*;

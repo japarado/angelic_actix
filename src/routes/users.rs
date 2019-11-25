@@ -5,6 +5,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/users")
             .service(user_controller::index)
-            .service(user_controller::store),
+            .service(user_controller::store)
+            .service(user_controller::get),
     );
 }
