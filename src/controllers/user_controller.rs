@@ -24,7 +24,6 @@ struct GetResponse {
 #[get("/{id}")]
 pub fn get(path: web::Path<(i32)>) -> impl Responder {
     let request_user_id = path.to_string().parse::<i32>().unwrap();
-    use crate::schema::posts::dsl::*;
     use crate::schema::users::dsl::*;
 
     let connection = establish_connection();
