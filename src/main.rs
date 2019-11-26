@@ -17,8 +17,10 @@ use actix_web::{get, http, middleware, App, HttpResponse, HttpServer, Responder}
 use dotenv::dotenv;
 use std::env;
 
+// r2d2 setup
+
 fn main() {
-    std::env::set_var("RUST_LOG", "actix_web=info");
+    std::env::set_var("RUST_LOG", "actix_web=debug");
     dotenv().ok();
 
     let address = format!(

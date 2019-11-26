@@ -56,8 +56,6 @@ pub fn store(form: web::Form<NewUser>) -> impl Responder {
         hash: form.hash.to_string(),
     };
 
-    println!("{:?}", new_user);
-
     let connection = establish_connection();
 
     let user = diesel::insert_into(users)
@@ -70,7 +68,14 @@ pub fn store(form: web::Form<NewUser>) -> impl Responder {
 
 #[patch("/{id}")]
 pub fn update(path: web::Path<(i32)>, form: web::Form<NewUser>) -> impl Responder {
-    HttpResponse::Ok().json("User update root")
+    use crate::schema::users::dsl::*;
+
+    let new_user = NewUser {
+        email: form.email.to_string(),
+        hash: form.hash.to_string(),
+    };
+
+    let connection = establish_connection();
 }
 
 #[delete("/{id}")]
