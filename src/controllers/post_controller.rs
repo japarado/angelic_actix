@@ -4,6 +4,10 @@ use actix_web::{delete, get, patch, post, web, HttpResponse, Responder};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
+// Custom Responders
+use crate::responders::post_responders;
+
+
 #[get("")]
 fn index() -> impl Responder {
     use crate::schema::posts::dsl::*;
@@ -12,7 +16,9 @@ fn index() -> impl Responder {
     let results = posts.order(id.asc()).load::<Post>(&connection);
 
     match results {
-        Ok(retrieved_posts) => HttpResponse::Ok().json(retrieved_posts),
+        Ok(retrieved_posts) =>{
+            HttpResponse::Ok().json(post_responders::Multiple{ posts: retrieved_posts })
+        },
         Err(_e) => HttpResponse::Ok().body("No posts in database"),
     }
 }
@@ -26,7 +32,7 @@ pub fn get(path: web::Path<(i32)>) -> impl Responder {
     let result = posts.find(post_id).first::<Post>(&connection);
 
     match result {
-        Ok(post) => HttpResponse::Ok().json(post),
+        Ok(post) => HttpResponse::Ok().json(post_responders::Single{ post: post }),
         Err(_e) => HttpResponse::NotFound().json(format!("Post {} not found", post_id)),
     }
 }
@@ -48,7 +54,7 @@ pub fn store(form: web::Form<NewPost>) -> impl Responder {
         .get_result(&connection)
         .expect("Can't create post");
 
-    HttpResponse::Ok().json(post)
+    HttpResponse::Ok().json(post_responders::Single { post: post })
 }
 
 #[patch("/{id}")]
@@ -88,13 +94,3 @@ pub fn delete(path: web::Path<(i32)>) -> impl Responder {
     }
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct Entry<T, V> {
-    pub key: T,
-    pub value: V,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Context<T, V> {
-    pub items: Vec<Entry<T, V>>,
-}

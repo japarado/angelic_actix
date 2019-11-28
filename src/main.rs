@@ -9,8 +9,10 @@ extern crate r2d2;
 mod controllers;
 mod database;
 mod models;
+mod responders;
 mod routes;
 mod schema;
+mod seeders;
 
 use actix_cors::Cors;
 use actix_web::{get, http, middleware, App, HttpResponse, HttpServer, Responder};
@@ -29,8 +31,13 @@ fn main() {
         env::var("PORT").unwrap_or(String::from("8000"))
     );
 
+    // database::seed();
+
+    let pool = database::create_pool();
+
     HttpServer::new(move || {
         App::new()
+            .data(pool.clone())
             .wrap(
                 Cors::new()
                     // .allowed_origin("http://localhost:3001")
@@ -43,6 +50,7 @@ fn main() {
             .configure(routes::posts::config)
             .configure(routes::users::config)
             .service(index)
+            .service(admin)
     })
     .bind(address)
     .unwrap()
@@ -52,5 +60,12 @@ fn main() {
 
 #[get("/")]
 fn index() -> impl Responder {
-    HttpResponse::Ok().body("API Root")
+    HttpResponse::Ok().body("Root")
+}
+
+#[get("/admin")]
+fn admin() -> impl Responder {
+    HttpResponse::Ok().json(responders::GenericResponse {
+        message: String::from("Admin Console"),
+    })
 }

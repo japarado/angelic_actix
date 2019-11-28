@@ -14,7 +14,7 @@ pub struct User {
     pub hash: String,
 }
 
-#[derive(Serialize, Deserialize, Insertable)]
+#[derive(Serialize, Deserialize, Insertable, Debug)]
 #[table_name = "posts"]
 pub struct NewPost {
     pub title: String,
@@ -29,6 +29,23 @@ pub struct Post {
     pub title: String,
     pub body: String,
     pub user_id: i32,
+}
+
+#[derive(Serialize, Deserialize, Insertable, Debug)]
+#[table_name = "comments"]
+pub struct NewComment {
+    pub body: String,
+    pub user_id: i32,
+    pub post_id: i32,
+}
+
+#[derive(Serialize, Deserialize, Debug, Queryable, Associations, Eq, PartialEq, Identifiable)]
+#[belongs_to(User, Post)]
+pub struct Comment {
+    pub id: i32,
+    pub body: String,
+    pub user_id: i32,
+    pub post_id: i32,
 }
 
 // pub struct NewUser {

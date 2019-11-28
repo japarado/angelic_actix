@@ -1,18 +1,29 @@
 use crate::database::establish_connection;
 use crate::models::{NewPost, NewUser, Post, User};
+use crate::responders::{user_responders, GenericResponse};
 use actix_web::{delete, get, patch, post, web, HttpResponse, Responder};
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::vec::Vec;
 
 #[get("")]
 pub fn index() -> impl Responder {
     use crate::schema::users::dsl::*;
 
     let connection = establish_connection();
-    let result = users.order(id.asc()).load::<User>(&connection);
+    let query = users.order(id.asc()).load::<User>(&connection);
 
-    HttpResponse::Ok().json(result.unwrap())
+    match query {
+        Ok(all_users) => {
+            let response = user_responders::Multiple { users: all_users };
+            HttpResponse::Ok().json(response)
+        }
+        Err(err) => {
+            let response = GenericResponse {
+                message: format!("Error retrieving users: {}", err),
+            };
+            HttpResponse::Ok().json(response)
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize)]
